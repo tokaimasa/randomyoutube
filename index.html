@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>ランダム人気動画</title>
+  <style>
+    body {
+      text-align: center;
+      font-family: sans-serif;
+      padding: 50px;
+    }
+    iframe {
+      width: 560px;
+      height: 315px;
+      border: none;
+    }
+    #loading {
+      font-size: 20px;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>ランダム人気動画</h1>
+  <div id="loading">読み込み中...</div>
+  <iframe id="videoFrame" src="" allowfullscreen style="display:none;"></iframe>
+
+  <script>
+    const API_KEY = "AIzaSyDbJz2WjdoSbgCzT0-utyr3SGAjYeREDIE"; // ←ここに自分のYouTube APIキーを入れてね
+    const MAX_RESULTS = 25;
+
+    async function fetchPopularVideos() {
+      const url = `https://www.googleapis.com/youtube/v3/videos?part=snippet&chart=mostPopular&regionCode=JP&maxResults=${MAX_RESULTS}&key=${API_KEY}`;
+      const response = await fetch(url);
+      const data = await response.json();
+      return data.items;
+    }
+
+    function showRandomVideo(videos) {
+      const randomIndex = Math.floor(Math.random() * videos.length);
+      const videoId = videos[randomIndex].id;
+      document.getElementById("videoFrame").src = `https://www.youtube.com/embed/${videoId}`;
+      document.getElementById("loading").style.display = "none";
+      document.getElementById("videoFrame").style.display = "block";
+    }
+
+    fetchPopularVideos()
+      .then(showRandomVideo)
+      .catch(error => {
+        document.getElementById("loading").innerText = "動画の取得に失敗しました。";
+        console.error("エラー:", error);
+      });
+  </script>
+</body>
+</html>
